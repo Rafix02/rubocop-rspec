@@ -3,6 +3,7 @@
 ## Master (Unreleased)
 
 * Add `RSpec/RepeatedIncludeExample` cop. ([@biinari][])
+* Add `RSpec/StubbedMock` cop. ([@bquorning][], [@pirj][])
 * Fix `RSpec/FilePath` when checking a file with a shared example. ([@pirj][])
 * Fix subject nesting detection in `RSpec/LeadingSubject`. ([@pirj][])
 
