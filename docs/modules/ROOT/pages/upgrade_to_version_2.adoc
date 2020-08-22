@@ -7,6 +7,7 @@ In version 2.x:
 
  - `RSpec/InvalidPredicateMatcher` cop is removed
  - `CustomIncludeMethods` configuration option for `RSpec/EmptyExampleGroup` is removed
+ - cop departments are nested
 
 [discrete]
 === Adjust the configuration of `RSpec/EmptyExampleGroup`
@@ -28,6 +29,40 @@ AllCops:
         Example:
         - include_tests
 ----
+
+=== Add a top-level `RSpec` department
+
+RuboCop extensions had cops with clashing names and departments, e.g. both `rspec-rails` and `rubocop-rspec` had `Rails::HttpStatus` cops.
+Also, in some circumstances RuboCop was complaining that some cops have wrong departments specified in the config file, e.g. `RSpec::FilePath` and `Rails::FilePath`, `RSpec/VariableName` and `Naming/VariableName`.
+To avoid issues, e.g. inability to disable just one of the cops, each extension now has its own uber-department.
+Expectedly, RuboCop RSpec's uber-department name is `RSpec`.
+
+[source,yaml]
+----
+# .rubocop.yml
+
+# Before
+RSpec/EmptyExampleGroup:
+  Enabled: false
+
+Capybara/CurrentPathExpectation:
+  Enabled: false
+
+FactoryBot/AttributeDefinedStatically:
+  Enabled: false
+
+# After
+RSpec/RSpec/EmptyExampleGroup:
+  Enabled: false
+
+RSpec/Capybara/CurrentPathExpectation:
+  Enabled: false
+
+RSpec/FactoryBot/AttributeDefinedStatically:
+  Enabled: false
+----
+
+https://github.com/rubocop-hq/rubocop/pull/8490[Learn more about this change].
 
 == Custom Cop Update Guide
 
