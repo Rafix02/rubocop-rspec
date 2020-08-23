@@ -5,6 +5,19 @@ module RuboCop
     module RSpec
       # Check that the first argument to the top-level describe is a constant.
       #
+      # It can be configured to ignore strings when certain metadata is passed.
+      #
+      # Ignores Rails `type` metadata by default.
+      #
+      # @example `IgnoredMetadata` configuration
+      #
+      #   # .rubocop.yml
+      #   # RSpec/DescribeClass:
+      #   #   IgnoredMetadata:
+      #   #     type:
+      #   #       - request
+      #   #       - controller
+      #
       # @example
       #   # bad
       #   describe 'Do something' do
@@ -27,35 +40,41 @@ module RuboCop
         MSG = 'The first argument to describe should be '\
               'the class or module being tested.'
 
-        def_node_matcher :rails_metadata?, <<-PATTERN
-          (pair
-            (sym :type)
-            (sym { :channel :controller :helper :job :mailer :model :request
-                   :routing :view :feature :system :mailbox })
-          )
-        PATTERN
-
-        def_node_matcher :example_group_with_rails_metadata?, <<~PATTERN
-          (send #rspec? :describe ... (hash <#rails_metadata? ...>))
+        def_node_matcher :example_group_with_ignored_metadata?, <<~PATTERN
+          (send #rspec? :describe ... (hash <#ignored_metadata? ...>))
         PATTERN
 
         def_node_matcher :not_a_const_described, <<~PATTERN
           (send #rspec? :describe $[!const !#string_constant?] ...)
         PATTERN
 
-        def on_top_level_group(top_level_node)
-          return if example_group_with_rails_metadata?(top_level_node.send_node)
+        def on_top_level_group(node)
+          return if example_group_with_ignored_metadata?(node.send_node)
 
-          not_a_const_described(top_level_node.send_node) do |described|
+          not_a_const_described(node.send_node) do |described|
             add_offense(described)
           end
         end
 
         private
 
+        def ignored_metadata?(node)
+          return false unless sym_pair?(node)
+
+          ignored_metadata[node.key.value.to_s]&.include? node.value.value.to_s
+        end
+
+        def sym_pair?(node)
+          node.key.sym_type? && node.value.sym_type?
+        end
+
         def string_constant?(described)
           described.str_type? &&
             described.value.match?(/^(?:(?:::)?[A-Z]\w*)+$/)
+        end
+
+        def ignored_metadata
+          cop_config['IgnoredMetadata'] || {}
         end
       end
     end

@@ -320,12 +320,26 @@ Prefixes | `when`, `with`, `without` | Array
 
 Enabled by default | Safe | Supports autocorrection | VersionAdded | VersionChanged
 --- | --- | --- | --- | ---
-Enabled | Yes | No | 1.0 | -
+Enabled | Yes | No | 1.0 | 1.44
 
 Check that the first argument to the top-level describe is a constant.
 
+It can be configured to ignore strings when certain metadata is passed.
+
+Ignores Rails `type` metadata by default.
+
 ### Examples
 
+#### `IgnoredMetadata` configuration
+
+```ruby
+# .rubocop.yml
+# RSpec/DescribeClass:
+#   IgnoredMetadata:
+#     type:
+#       - request
+#       - controller
+```
 ```ruby
 # bad
 describe 'Do something' do
@@ -343,6 +357,12 @@ end
 describe "A feature example", type: :feature do
 end
 ```
+
+### Configurable attributes
+
+Name | Default value | Configurable values
+--- | --- | ---
+IgnoredMetadata | `{"type"=>["channel", "controller", "helper", "job", "mailer", "model", "request", "routing", "view", "feature", "system", "mailbox"]}` | 
 
 ### References
 
