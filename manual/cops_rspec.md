@@ -326,7 +326,7 @@ Check that the first argument to the top-level describe is a constant.
 
 It can be configured to ignore strings when certain metadata is passed.
 
-Ignores Rails `type` metadata by default.
+Ignores Rails and Aruba `type` metadata by default.
 
 ### Examples
 
@@ -362,7 +362,7 @@ end
 
 Name | Default value | Configurable values
 --- | --- | ---
-IgnoredMetadata | `{"type"=>["channel", "controller", "helper", "job", "mailer", "model", "request", "routing", "view", "feature", "system", "mailbox"]}` | 
+IgnoredMetadata | `{"type"=>["channel", "controller", "helper", "job", "mailer", "model", "request", "routing", "view", "feature", "system", "mailbox", "aruba"]}` | 
 
 ### References
 
